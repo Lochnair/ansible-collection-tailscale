@@ -20,6 +20,7 @@ ansible-galaxy collection install artis3n.tailscale
 ```
 
 Supported operating systems for Tailscale devices:
+- Alpine Linux
 - Debian / Ubuntu
 - CentOS / RedHat
 - Rocky Linux / AlmaLinux

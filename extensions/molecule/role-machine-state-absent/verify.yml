@@ -5,6 +5,10 @@
     - name: Gather Service Facts
       ansible.builtin.service_facts:
 
+    - name: Determine Tailscale service name
+      ansible.builtin.set_fact:
+        tailscale_test_service: "{{ 'tailscale' if ansible_facts.distribution == 'Alpine' else 'tailscaled' }}"
+
     - name: Get Tailscale path
       ansible.builtin.command: which tailscale
       changed_when: false
@@ -28,7 +32,7 @@
         that:
           - tailscale_status.rc == 1
           - not state_dir.stat.exists
-          - "'tailscaled' not in ansible_facts.services or ansible_facts.services['tailscaled']['status'] == 'stopped'"
+          - tailscale_test_service not in ansible_facts.services or ansible_facts.services[tailscale_test_service]['status'] == 'stopped'
 
     - name: Get tailscale package state file status
       ansible.builtin.stat:

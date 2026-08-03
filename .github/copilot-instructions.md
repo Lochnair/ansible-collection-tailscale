@@ -112,6 +112,7 @@ When `tailscale up` fails:
 4. Display redacted stderr and fail explicitly
 
 ### Repository Package Management
+- **Alpine**: Enables the release-matched community repository and uses APK
 - **Debian/Ubuntu**: Uses `deb822_repository` module (new format) and cleans up legacy `apt_repository` entries
 - **CentOS/RHEL**: Adds Tailscale yum repository by distribution
 - **Fedora/Amazon Linux**: Uses dnf repository configuration

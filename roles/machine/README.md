@@ -7,6 +7,7 @@
 This role installs and configures [Tailscale][] on a Linux target.
 
 Supported operating systems:
+- Alpine Linux
 - Debian / Ubuntu
 - CentOS / RedHat
 - Rocky Linux / AlmaLinux

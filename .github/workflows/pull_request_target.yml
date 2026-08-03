@@ -39,12 +39,16 @@ jobs:
           - geerlingguy/docker-fedora42-ansible:latest
           - geerlingguy/docker-fedora41-ansible:latest
           - carlodepieri/docker-archlinux-ansible:latest
+          - alpine/ansible:2.20.0
           - ghcr.io/artis3n/docker-opensuse-tumbleweed-ansible:latest
           - geerlingguy/docker-opensuseleap15-ansible:latest
         scenario:
           - role-machine-default
         include:
           # Add command overrides for distros that require it
+          - image: alpine/ansible:2.20.0
+            command: /sbin/init
+            scenario: role-machine-default
           - image: geerlingguy/docker-debian11-ansible:latest
             command: /lib/systemd/systemd
             scenario: role-machine-default
@@ -61,6 +65,16 @@ jobs:
     name: "Run Molecule Scenario: role-machine-state-absent"
     uses: ./.github/workflows/molecule.yml
     with:
+      scenario: 'role-machine-state-absent'
+    secrets:
+      tailscale_key: ${{ secrets.TAILSCALE_CI_KEY }}
+
+  molecule-state-absent-alpine:
+    name: "Run Molecule Scenario: role-machine-state-absent / Alpine"
+    uses: ./.github/workflows/molecule.yml
+    with:
+      image: 'alpine/ansible:2.20.0'
+      command: '/sbin/init'
       scenario: 'role-machine-state-absent'
     secrets:
       tailscale_key: ${{ secrets.TAILSCALE_CI_KEY }}

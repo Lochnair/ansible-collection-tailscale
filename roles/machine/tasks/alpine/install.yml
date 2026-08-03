@@ -1,0 +1,54 @@
+---
+- name: Alpine | Read APK repositories
+  become: true
+  ansible.builtin.slurp:
+    path: /etc/apk/repositories
+  register: tailscale_alpine_repositories_file
+
+- name: Alpine | Determine enabled APK repositories
+  ansible.builtin.set_fact:
+    tailscale_alpine_repositories: >-
+      {{
+        (tailscale_alpine_repositories_file.content | b64decode).splitlines()
+        | map('trim')
+        | reject('match', '^#')
+        | select('match', '^https?://')
+        | list
+      }}
+
+- name: Alpine | Determine community repository
+  ansible.builtin.set_fact:
+    tailscale_alpine_community_repository: >-
+      {{
+        tailscale_alpine_repositories
+        | select('match', '^https?://.*/community/?$')
+        | first
+        | default(
+            tailscale_alpine_repositories
+            | select('match', '^https?://.*/main/?$')
+            | first
+            | default('')
+            | regex_replace('/main/?$', '/community')
+          )
+      }}
+
+- name: Alpine | Require an APK main or community repository
+  ansible.builtin.assert:
+    that: tailscale_alpine_community_repository | length > 0
+    fail_msg: >-
+      Tailscale is packaged in Alpine's community repository, but no enabled
+      Alpine main or community repository was found in /etc/apk/repositories.
+
+- name: Alpine | Enable community repository
+  become: true
+  ansible.builtin.lineinfile:
+    path: /etc/apk/repositories
+    line: "{{ tailscale_alpine_community_repository }}"
+    state: present
+
+- name: Alpine | Install Tailscale
+  become: true
+  community.general.apk:
+    name: "{{ tailscale_package }}"
+    state: "{{ state }}"
+    update_cache: true

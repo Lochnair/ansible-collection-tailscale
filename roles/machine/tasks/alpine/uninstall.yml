@@ -1,0 +1,6 @@
+---
+- name: Alpine | Remove Tailscale
+  become: true
+  community.general.apk:
+    name: "{{ tailscale_package }}"
+    state: absent

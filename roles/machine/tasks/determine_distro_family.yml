@@ -16,6 +16,8 @@
       arch
       {%- elif ansible_facts.distribution in tailscale_opensuse_family_distros -%}
       opensuse
+      {%- elif ansible_facts.distribution == 'Alpine' -%}
+      alpine
       {%- else -%}
       unknown
       {%- endif -%}
@@ -29,5 +31,5 @@
   ansible.builtin.fail:
     msg: >
       Unsupported distribution: {{ ansible_facts.distribution }}.
-      Supported distributions are: Debian/Ubuntu, CentOS/RHEL/Rocky/Alma/Oracle, Fedora, Amazon Linux 2023+, Arch Linux, and OpenSUSE.
+      Supported distributions are: Alpine, Debian/Ubuntu, CentOS/RHEL/Rocky/Alma/Oracle, Fedora, Amazon Linux 2023+, Arch Linux, and OpenSUSE.
   when: tailscale_distro_family == 'unknown'
